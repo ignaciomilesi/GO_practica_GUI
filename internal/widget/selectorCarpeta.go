@@ -18,21 +18,21 @@ func NewSelectorCarpeta() *selectorCarpeta {
 }
 
 func (s *selectorCarpeta) Build() {
-	g.Style().
-		SetFontSize(13).To(
-		g.Label("Carpeta con sólidos y PDF:"),
+	g.Row(
+		g.Style().
+			SetFontSize(13).To(
+			g.Label("Carpeta con sólidos y PDF:"),
+		),
+		g.Style().
+			SetFontSize(10).To(
+			g.Label(" (Seleccionar o arrastrar carpeta)"),
+		),
 	).Build()
 
 	g.Row(
 		g.InputText(&ubicacionCapeta).Flags(g.InputTextFlagsReadOnly).Size(530),
 		g.Button("Seleccionar").OnClick(s.buscarCarpeta),
 	).Build()
-
-	g.Style().
-		SetFontSize(10).To(
-		g.Label("(Seleccionar o arrastrar carpeta)"),
-	).Build()
-
 }
 
 func (s *selectorCarpeta) buscarCarpeta() {
@@ -44,5 +44,7 @@ func (s *selectorCarpeta) buscarCarpeta() {
 	}
 
 	ubicacionCapeta = carpeta
+
+	TreeNode = nuevoListarArchivos(carpeta)
 
 }

@@ -1,14 +1,12 @@
 package main
 
 import (
-	"prueba-gui/widget"
+	"prueba-gui/internal/widget"
 
 	g "github.com/AllenDang/giu"
 )
 
 var (
-	ubicacionCapeta string
-
 	sashPos1 float32 = 200
 )
 
@@ -25,6 +23,10 @@ func esquema() {
 		widget.NewBarraMenu(),
 
 		widget.NewSelectorCarpeta(),
+
+		g.Dummy(5, 5),
+
+		widget.NewVisorPdfSeleccionado(),
 
 		g.SplitLayout(g.DirectionVertical, &sashPos1,
 			g.Layout{},
