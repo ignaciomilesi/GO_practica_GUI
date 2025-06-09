@@ -1,92 +1,80 @@
 package widget
 
 import (
-	"fmt"
 	"image/color"
-	"os"
-	"strings"
+
+	"prueba-gui/internal/estructuraCarpeta"
+	"prueba-gui/internal/seleccion"
 
 	g "github.com/AllenDang/giu"
 )
 
-var (
-	TreeNode g.Layout
-)
+type listadoArchivo struct{}
 
-type Archivo struct {
-	Nombre string
-	Tipo   string
-	Path   string
+var layoutListadoArchivo g.Layout
+
+func NuevoListadoArchivo() *listadoArchivo {
+	return &listadoArchivo{}
 }
 
-type listadoArchvio struct{}
-
-func NewListadoArchvio() *listadoArchvio {
-	return &listadoArchvio{}
+func ActualizarLayoutListadoArchivo() {
+	layoutListadoArchivo = NuevoListadoArchivo().generarTreeNode(seleccion.Carpeta)
 }
 
-func (l *listadoArchvio) Build() {
+func (l *listadoArchivo) Build() {
 
 	g.Style().
 		SetFontSize(13).To(
 		g.Label("Lista de archivos en la carpeta:"),
 	).Build()
 
-	TreeNode.Build()
+	layoutListadoArchivo.Build()
 
 }
 
-func nuevoListarArchivos(path string) (lll g.Layout) {
-	nombrePDFSeleccionado = ""
-	TreeNode = generarTreeNode(ubicacionCapeta, true)
+func (l *listadoArchivo) generarTreeNode(carpetaSeleccionada estructuraCarpeta.Carpeta) (layoutTemp g.Layout) {
 
-	return TreeNode
-}
+	// recorremos las subcarpetas
+	for _, subcarpeta := range carpetaSeleccionada.SubCarpetas {
 
-func generarTreeNode(path string, marcarAlBuscar bool) (lll g.Layout) {
+		//genero el sub-listado (iteración), y lo agrego como un treeNode
 
-	files, err := os.ReadDir(path)
-	if err != nil {
-		fmt.Println(err)
+		sublistado := l.generarTreeNode(subcarpeta)
+
+		layoutTemp = append(layoutTemp, g.TreeNode(subcarpeta.Nombre).Flags(g.TreeNodeFlagsDefaultOpen).Layout(sublistado...))
+
 	}
 
-	for _, file := range files {
+	// recorremos los archivos
+	for _, archivo := range carpetaSeleccionada.Archivos {
 
-		if file.IsDir() {
+		// descarto los archivos internos de sistema
+		if archivo.Tipo == "db" {
+			continue
+		}
 
-			sublistado := generarTreeNode(path+"\\"+file.Name(), marcarAlBuscar)
+		if archivo.Tipo == "pdf" {
 
-			lll = append(lll, g.TreeNode(file.Name()).Flags(g.TreeNodeFlagsDefaultOpen).Layout(sublistado...))
+			if seleccion.PDF.Nombre == "" {
 
+				seleccion.PDF = archivo
+
+			}
+
+			// al ser del tipo pdf agrego un  radioButon
+			layoutTemp = append(layoutTemp, g.RadioButton(archivo.Nombre, seleccion.PDF.Path == archivo.Path).OnChange(func() {
+
+				seleccion.PDF = archivo
+
+				// busco actualizar el layout por ello quito el marcar
+				layoutListadoArchivo = l.generarTreeNode(seleccion.Carpeta)
+			}))
+
+			//si no es del tipo pdf agrego un  laber
 		} else {
-
-			nuevoArchivo := Archivo{
-				Nombre: file.Name(),
-				Tipo:   strings.ToLower(file.Name()[strings.LastIndex(file.Name(), ".")+1:]),
-				Path:   path + "\\" + file.Name(),
-			}
-
-			if nuevoArchivo.Tipo == "db" {
-				continue
-			}
-			if nuevoArchivo.Tipo == "pdf" {
-
-				if marcarAlBuscar && nombrePDFSeleccionado == "" {
-					nombrePDFSeleccionado = nuevoArchivo.Path
-				}
-
-				lll = append(lll, g.RadioButton(nuevoArchivo.Nombre, nombrePDFSeleccionado == nuevoArchivo.Path).OnChange(func() {
-
-					nombrePDFSeleccionado = nuevoArchivo.Path
-
-					TreeNode = generarTreeNode(ubicacionCapeta, false)
-				}))
-
-			} else {
-				lll = append(lll,
-					g.Style().SetColor(g.StyleColorText, color.RGBA{100, 100, 100, 255}).To(
-						g.Label(" - "+nuevoArchivo.Nombre)))
-			}
+			layoutTemp = append(layoutTemp,
+				g.Style().SetColor(g.StyleColorText, color.RGBA{100, 100, 100, 255}).To(
+					g.Label(" - "+archivo.Nombre)))
 		}
 	}
 

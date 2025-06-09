@@ -1,16 +1,14 @@
 package widget
 
 import (
-	g "github.com/AllenDang/giu"
-)
+	"prueba-gui/internal/seleccion"
 
-var (
-	nombrePDFSeleccionado string
+	g "github.com/AllenDang/giu"
 )
 
 type visorPDFSeleccionado struct{}
 
-func NewVisorPdfSeleccionado() *visorPDFSeleccionado {
+func NuevoVisorPDFSeleccionado() *visorPDFSeleccionado {
 	return &visorPDFSeleccionado{}
 }
 
@@ -21,5 +19,5 @@ func (v *visorPDFSeleccionado) Build() {
 		g.Label("Plano a cargar en el compartido:"),
 	).Build()
 
-	g.InputText(&nombrePDFSeleccionado).Flags(g.InputTextFlagsReadOnly).Size(g.Auto).Build()
+	g.InputText(&seleccion.PDF.Nombre).Flags(g.InputTextFlagsReadOnly).Size(g.Auto).Build()
 }

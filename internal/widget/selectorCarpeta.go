@@ -2,6 +2,8 @@ package widget
 
 import (
 	"fmt"
+	"prueba-gui/internal/estructuraCarpeta"
+	"prueba-gui/internal/seleccion"
 
 	g "github.com/AllenDang/giu"
 	"github.com/sqweek/dialog"
@@ -9,11 +11,7 @@ import (
 
 type selectorCarpeta struct{}
 
-var (
-	ubicacionCapeta string
-)
-
-func NewSelectorCarpeta() *selectorCarpeta {
+func NuevoSelectorCarpeta() *selectorCarpeta {
 	return &selectorCarpeta{}
 }
 
@@ -30,12 +28,13 @@ func (s *selectorCarpeta) Build() {
 	).Build()
 
 	g.Row(
-		g.InputText(&ubicacionCapeta).Flags(g.InputTextFlagsReadOnly).Size(530),
+		g.InputText(&seleccion.Carpeta.Path).Flags(g.InputTextFlagsReadOnly).Size(890),
 		g.Button("Seleccionar").OnClick(s.buscarCarpeta),
 	).Build()
 }
 
 func (s *selectorCarpeta) buscarCarpeta() {
+
 	carpeta, err := dialog.Directory().Browse()
 
 	if err != nil {
@@ -43,8 +42,8 @@ func (s *selectorCarpeta) buscarCarpeta() {
 		return
 	}
 
-	ubicacionCapeta = carpeta
+	seleccion.Carpeta = estructuraCarpeta.NuevaCarpeta(carpeta)
 
-	TreeNode = nuevoListarArchivos(carpeta)
+	ActualizarLayoutListadoArchivo()
 
 }

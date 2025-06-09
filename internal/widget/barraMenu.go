@@ -6,7 +6,7 @@ import (
 
 type barraMenu struct{}
 
-func NewBarraMenu() *barraMenu {
+func NuevoBarraMenu() *barraMenu {
 	return &barraMenu{}
 }
 
