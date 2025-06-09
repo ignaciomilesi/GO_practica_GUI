@@ -6,33 +6,34 @@ import (
 	g "github.com/AllenDang/giu"
 )
 
-var (
-	sashPos1 float32 = 200
-)
-
 func main() {
-	wnd := g.NewMasterWindow("Cargar plano", 640, 480, g.MasterWindowFlagsNotResizable)
+
+	wnd := g.NewMasterWindow("Cargar plano", 1000, 480, g.MasterWindowFlagsNotResizable)
 
 	wnd.Run(esquema)
 }
+
+var (
+	sashPos1 float32 = 400
+)
 
 func esquema() {
 
 	g.SingleWindowWithMenuBar().Layout(
 
-		widget.NewBarraMenu(),
+		widget.NuevoBarraMenu(),
 
-		widget.NewSelectorCarpeta(),
+		widget.NuevoSelectorCarpeta(),
 
 		g.Dummy(5, 5),
 
-		widget.NewVisorPdfSeleccionado(),
+		widget.NuevoVisorPDFSeleccionado(),
 
 		g.SplitLayout(g.DirectionVertical, &sashPos1,
 			g.Layout{},
 			g.Layout{
 
-				widget.NewListadoArchvio(),
+				widget.NuevoListadoArchivo(),
 			},
 		).SplitRefType(g.SplitRefRight),
 	)
